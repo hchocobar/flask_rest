@@ -6,7 +6,7 @@ from data import table  # importamos nuestros datos de prueba
 app = Flask(__name__)
 
 
-@app.route('/rest')  # GET - mostramos la tabla completa
+@app.route('/rest', methods=['GET'])  # GET - mostramos la tabla completa
 def get_table():
     return jsonify({'table': table,
                     'message': 'Tabla completa que devuelve la App'})
@@ -18,7 +18,7 @@ def get_column_id(column_id):
     if column_found:  # True si la lista contiene algo; False si la lista está vacía
         return jsonify({'column': column_found[0],
                         'message': 'Columna encontrada'})
-    return jsonify({'message': 'Columna no encontrada'})
+    return jsonify({'message': 'Columna no encontrada'}), 404
 
 
 @app.route('/rest/<string:column_name>')  # GET - búsqueda por el campo 'name'
@@ -27,7 +27,7 @@ def get_column_name(column_name):
     if column_found:
         return jsonify({'column': column_found[0],
                         'message': 'Columna encontrada'})
-    return jsonify({'message': 'Columna no encontrada'})
+    return jsonify({'message': 'Columna no encontrada'}), 404
 
 
 @app.route('/rest', methods=['POST'])
@@ -51,7 +51,7 @@ def edit_column(column_id):
         column_found[0]['quantity'] = request.json['quantity']
         return jsonify({'column': column_found[0],
                         'message': 'Columna actualizada exitosamente'})
-    return jsonify({'message': 'Columna no encontrada'})
+    return jsonify({'message': 'Columna no encontrada'}), 404
 
 
 @app.route('/rest/<int:column_id>', methods=['DELETE'])
@@ -61,8 +61,10 @@ def delete_column(column_id):
         table.remove(column_found[0])
         return jsonify({'table': table,
                         'message': 'Columna eliminada exitosamente'})
-    return jsonify({'message': 'Columna no encontrada'})
+    return jsonify({'message': 'Columna no encontrada'}), 404
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',
+            port=5000,
+            debug=True)
